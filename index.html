@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EventFlow - Event Management System</title>
+
+<style>
+/* ---------- GLOBAL ---------- */
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#f4f6f8;
+  display:flex;
+}
+h2{color:#4f46e5} 
+input, textarea{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+}
+landing ul{
+  padding-left:18px;
+}
+landing li{
+  margin-bottom:6px;
+}
+
+button{
+  padding:10px 15px;
+  background:#4f46e5;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+aside{
+  width:240px;
+  background:#3730a3;
+  color:#fff;
+  min-height:100vh;
+  padding:20px;
+  box-sizing:border-box;
+  /* display:flex;
+  flex-direction:column;
+  gap:15px; */
+}
+aside h1{
+  margin-top:0;
+  font-size:24px;
+  margin-bottom:20px;
+}
+aside a{
+  display:block;
+  color:white;
+  text-decoration:none;
+  margin:10px 0;
+  padding: 8px;
+  border-radius:4px;
+  cursor:pointer;
+}
+aside a:hover{
+  background:rgba(255,255,255,0.2);
+}
+section{
+  display:none; 
+  padding:20px}
+
+/* ---------- NAVBAR ---------- */
+/* nav{
+  background:#4f46e5;
+  color:#fff;
+  padding:15px;
+  display:flex;
+  gap:15px;
+  flex-wrap:wrap;
+}
+nav a{
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+  cursor:pointer
+} */
+
+/* ---------- DASHBOARD CARDS ---------- */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+}
+.card{
+  background:white;
+  padding:20px;
+  border-radius:8px;
+  margin: 10px 0;
+}
+
+/* ---------- TABLE ---------- */
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:white;
+}
+th,td{
+  border:1px solid #ccc;
+  padding:10px;
+  /* text-align:left; */
+}
+/* ---------- HOME PROFESSIONAL UI ---------- */
+.hero{
+  background: linear-gradient(135deg, #4f46e5, #3730a3);
+  color: white;
+  padding: 40px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+.hero h2{
+  font-size: 36px;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.hero-text{
+  font-size: 18px;
+  max-width: 700px;
+  line-height: 1.6;
+}
+
+.hero-buttons{
+  margin-top: 20px;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.hero-buttons .outline{
+  background: transparent;
+  border: 2px solid white;
+}
+
+.section-title{
+  margin: 30px 0 15px;
+  font-size: 22px;
+  color: #3730a3;
+}
+
+/* Feature Cards */
+.feature{
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: linear-gradient(135deg, #4f46e5, #3730a3);
+  color: white;
+}
+
+.feature:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* Mobile Friendly */
+@media(max-width:768px){
+  .hero h2{
+    font-size: 28px;
+  }
+  .hero-text{
+    font-size: 16px;
+  }
+}
+/* -------- REGISTRATION PAGE -------- */
+#register{
+  display:grid;
+  gap:20px;
+}
+
+#register h3{
+  margin-bottom:10px;
+  color:#3730a3;
+}
+
+#register label{
+  display:block;
+  margin-top:10px;
+  font-weight:600;
+}
+
+#register input, 
+#register select{
+  width:100%;
+  padding:10px;
+  margin-top:5px;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+
+#register button{
+  margin-top:15px;
+  padding:10px;
+  width:100%;
+  background:#3730a3;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+#register button:hover{
+  background:#312e81;
+}
+
+.rules{
+  padding-left:20px;
+}
+
+.rules li{
+  margin-bottom:6px;
+}
+
+.success-msg{
+  margin-top:10px;
+  color:green;
+  font-weight:600;
+}
+
+.info-card{
+  background:#eef2ff;
+}
+
+.rule-card{
+  background:#f9fafb;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ---------- NAVIGATION ---------- -->
+<aside>
+  <h1>EventFlow</h1>
+  <a onclick="showPage('landing')">Home</a>
+  <a onclick="showPage('register')">Registration</a>
+  <a onclick="showPage('login')">Login</a>
+  <a onclick="showPage('dashboard')">Dashboard</a>
+  <a onclick="showPage('createEvent')">Create Event</a>
+  <a onclick="showPage('eventDetails')">Events Details</a>
+  <a onclick="showPage('attendees')">Attendees</a>
+  <a onclick="showPage('certificate')">Certificate</a>
+  <a onclick="showPage('analytics')">Analytics</a>
+  <a onclick="showPage('profile')">Profile</a>
+  <a onclick="showPage('settings')">Settings</a>
+  <a onclick="showPage('help')">Help</a>
+</aside>
+
+<!-- 1️ LANDING PAGE -->
+<section id="landing">
+  <div class="hero">
+    <h2>EventFlow</h2>
+    <p class="hero-text">
+      A professional event management system to create events, manage registrations,
+      track attendance, and generate certificates — all in one platform.
+    </p>
+
+    <div class="hero-buttons">
+      <button class="outline" onclick="showPage('login')">Get Started</button>
+      <button class="outline" onclick="showPage('eventDetails')">View Events</button>
+    </div>
+  </div>
+
+  <h3 class="section-title">Why EventFlow?</h3>
+
+  <div class="cards">
+    <div class="card feature">
+      <h4>📅 Event Management</h4>
+      <p>Create and manage multiple events with date, venue, and description.</p>
+    </div>
+
+    <div class="card feature">
+      <h4>📝 Easy Registration</h4>
+      <p>Students can quickly register for events with instant confirmation.</p>
+    </div>
+
+    <div class="card feature">
+      <h4>📊 Analytics & Reports</h4>
+      <p>Track registrations, attendance rate, and present status in real time.</p>
+    </div>
+
+    <div class="card feature">
+      <h4>🎓 Certificates</h4>
+      <p>Generate participation certificates automatically for attendees.</p>
+    </div>
+  </div>
+
+  <h3 class="section-title">Who Can Use This?</h3>
+
+  <div class="cards">
+    <div class="card feature">
+      <h4>🏫 Colleges</h4>
+      <p>Manage symposiums, workshops, and seminars efficiently.</p>
+    </div>
+
+    <div class="card feature">
+      <h4>🏢 Organizations</h4>
+      <p>Organize corporate events and track participation data.</p>
+    </div>
+
+    <div class="card feature">
+      <h4>👩‍💼 Admin Users</h4>
+      <p>Complete control with dashboard, analytics, and attendee management.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2️ LOGIN -->
+<section id="login" class="page login-page">
+  <div class="login-card">
+
+    <!-- 1️⃣ Branding -->
+    <h1 class="login-title">Welcome to <span>EventFlow</span></h1>
+    <p class="login-subtitle">
+      Smart Event Planning & Registration System
+    </p>
+
+    <!-- 2️⃣ Login Form -->
+    <form onsubmit="loginUser(event)">
+      <label>Email Address</label>
+      <input type="email" id="loginEmail" placeholder="Enter your email" required>
+
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="Enter your password" required>
+
+      <button type="submit" class="btn-primary">Login</button>
+    </form>
+
+    <!-- 3️⃣ Feature Highlights -->
+    <div class="login-info">
+      <h3>Why EventFlow?</h3>
+      <ul>
+        <li> Easy event registration</li>
+        <li> Attendance tracking</li>
+        <li> Certificate generation</li>
+        <li> Analytics & reports</li>
+      </ul>
+    </div>
+
+    <!-- 4️⃣ User Roles -->
+    <div class="login-box">
+      <h4>Who can login?</h4>
+      <p>🎓 Students – Register & download certificates</p>
+      <p>🧑‍💼 Admin – Manage events & attendance</p>
+    </div>
+
+    <!-- 5️⃣ How It Works -->
+    <div class="login-box">
+      <h4>How it works</h4>
+      <ol>
+        <li>Create or select an event</li>
+        <li>Register participants</li>
+        <li>Track attendance & generate certificates</li>
+      </ol>
+    </div>
+
+    <!-- 6️⃣ Security -->
+    <div class="login-box security">
+      🔒 Your login information is secure and encrypted.
+    </div>
+
+    <!-- 7️⃣ Help -->
+    <div class="login-help">
+      <p>Need help?</p>
+      <p>Email: <b>support@eventflow.com</b></p>
+    </div>
+
+    <!-- 8️⃣ Quick Links -->
+    <div class="login-links">
+      <a href="#">About</a> |
+      <a href="#">Contact</a> |
+      <a href="#">Privacy Policy</a>
+    </div>
+
+    <!-- 9️⃣ Note -->
+    <p class="login-note">
+      Use your registered college email to login.
+    </p>
+
+    <!-- 🔟 Footer -->
+    <p class="login-footer">
+      © 2026 EventFlow | College Event Management System
+    </p>
+
+  </div>
+</section>
+
+
+<!-- 3️ DASHBOARD -->
+<section id="dashboard">
+  <h2>Dashboard</h2>
+
+  <div class="cards">
+    <div class="card">Total Events: <span id="eventCount">1</span></div>
+    <div class="card">Registrations: <span id="regCount">0</span></div>
+    <div class="card">Present: <span id="presentCount">0</span></div>
+  </div>
+</section>
+
+<!-- 4️ CREATE EVENT -->
+<section id="createEvent">
+  <h2>Create Event</h2>
+
+  <input id="eventName" placeholder="Event Name">
+  <input id="eventDate" type="date">
+  <input id="eventVenue" placeholder="Venue">
+  <textarea id="eventDesc" placeholder="Event Description"></textarea>
+
+  <button onclick="createEvent()">Create Event</button>
+</section>
+
+<!-- 5️ EVENT DETAILS -->
+<section id="eventDetails">
+  <h2>Event Details</h2>
+  <div id="eventCard"></div>
+</section>
+
+<!-- 6️ REGISTRATION -->
+<section id="register">
+  <h2>Event Registration</h2>
+
+  <!-- Event Info -->
+  <div class="card info-card">
+    <h3>📌 Event Information</h3>
+    <p><b>Event Name:</b> <span id="selectedEventName">Tech Symposium 2026</span></p>
+    <p><b>Date:</b> 25 March 2026</p>
+    <p><b>Venue:</b> Main Auditorium</p>
+    <p>
+      Register now to participate in this event. Limited seats available.
+      Confirmation and certificate details will be sent via email.
+    </p>
+  </div>
+
+  <!-- Registration Form -->
+  <div class="card">
+    <h3>📝 Participant Details</h3>
+
+    <label>Student Name</label>
+    <input id="regName" placeholder="Enter full name">
+
+    <label>Email Address</label>
+    <input id="regEmail" placeholder="Enter valid email">
+
+    <label>Department</label>
+    <input id="regDept" placeholder="Eg: CSE / IT / ECE">
+
+    <label>Year of Study</label>
+    <select id="regYear">
+      <option value="">Select Year</option>
+      <option>1st Year</option>
+      <option>2nd Year</option>
+      <option>3rd Year</option>
+      <option>4th Year</option>
+    </select>
+
+    <label>
+      <input type="checkbox" id="agreeRules">
+      I agree to the event rules and guidelines
+    </label>
+
+    <button onclick="registerStudent()">Register Now</button>
+
+    <p id="regMsg" class="success-msg"></p>
+  </div>
+
+  <!-- Rules -->
+  <div class="card rule-card">
+    <h3>📜 Registration Rules</h3>
+    <ul class="rules">
+      <li> Registration is free of cost</li>
+      <li> One participant can register only once</li>
+      <li> Attendance is mandatory for certificate</li>
+      <li> Certificates will be issued digitally</li>
+      <li> Late entry will not be allowed</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 7️ ATTENDEE LIST -->
+<section id="attendees">
+  <h2>Attendance List</h2>
+
+  <button onclick="exportCSV()">Export CSV</button>
+
+  <table id="attendanceTable">
+    <tr>
+      <th>S.No</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Status</th>
+      <th>Action</th>
+      <th>Event</th>
+    </tr>
+  </table>
+</section>
+
+<!-- 8️ CERTIFICATE -->
+<section id="certificate">
+  <h2>Certificate</h2>
+
+  <select id="certSelect"></select>
+
+  <p id="certText"></p>
+
+  <button onclick="generateCertificate()">Generate Certificate</button>
+</section>
+
+<!-- 9️ EVENT SCHEDULE -->
+<section id="schedule">
+  <h2>Event Schedule</h2>
+  <ul>
+    <li>10:00 AM – Opening</li>
+    <li>11:00 AM – Guest Speech</li>
+    <li>02:00 PM – Workshop</li>
+  </ul>
+</section>
+
+<!-- 10 NOTIFICATIONS -->
+<section id="notifications">
+  <h2>Notifications</h2>
+  <ul>
+    <li>New Registration Received</li>
+    <li>Event Schedule Updated</li>
+    <li>Certificate Issued</li>
+  </ul>
+</section>
+
+<!-- 11 ANALYTICS -->
+<section id="analytics">
+  <h2>Analytics</h2>
+  <p>Total Registrations: <b><span id="anaTotal">0</span></b></p>
+  <p>Present: <b><span id="anaPresent">0</span></b></p>
+  <p>Attendance Rate: <b><span id="anaRate">0%</span></b></p>
+</section>
+
+<!-- 12 PROFILE -->
+<section id="profile">
+  <h2>User Profile</h2>
+  <p>Name: Admin</p>
+  <p>Email: admin@eventflow.com</p>
+</section>
+
+<!-- 13 SETTINGS -->
+<section id="settings">
+  <h2>Settings</h2>
+  <label><input type="checkbox"> Enable Notifications</label>
+</section>
+
+<!-- 14 HELP -->
+<section id="help">
+  <h2>Help & Support</h2>
+  <p>Email: support@eventflow.com</p>
+</section>
+
+<script>
+  // Ensure default event always exists
+let events = JSON.parse(localStorage.getItem("events"));
+
+if (!Array.isArray(events) ||
+  events.length === 0) {
+    events = [
+      {
+    name: "Tech Symposium",
+    date: "2026-01-25",
+    venue: "College Auditorium",
+    desc: "A technical symposium with workshops and guest lectures."
+  }
+];
+  localStorage.setItem("events", JSON.stringify(events));
+}
+
+  // Initialize default event once
+  // if (!localStorage.getItem("event")) {
+  //   localStorage.setItem("event",JSON.stringify([
+  //     {
+  //       name: "Tech Symposium",
+  //       date: "2026-01-25",
+  //       venue: "College Auditorium",
+  //       desc: "A technical symposium with workshops and guest lectures."
+  //     }
+  //   ]));
+  // }
+/* ================= DATA ================= */
+let attendees = JSON.parse(localStorage.getItem("attendees")) || [];
+
+/* ================= REGISTER ================= */
+function registerStudent(){
+  const name = regName.value.trim();
+  const email = regEmail.value.trim();
+  const dept = regDept.value.trim();
+  const year = regYear.value;
+  const agree = agreeRules.checked;
+
+  if(!name || !email || !dept || !year){
+    alert("Please fill all fields");
+    return;
+  }
+  
+  if(!agree){
+    alert("Please agree to the rules");
+    }
+
+    if(!selectedEvent){
+  const events = JSON.parse(localStorage.getItem("events")) || [];
+  if(events.length > 0){
+    selectedEvent = events[0].name;
+    document.getElementById("selectedEventName").innerText = selectedEvent;
+  } else {
+    alert("No events available");
+    return;
+  }
+}
+
+  
+  // registrations.push({
+  //   name,
+  //   email,
+  //   dept,
+  //   year,
+  //   event: selectedEVentName.innerText,
+  //   status: "Registered"
+  // });
+  
+  attendees.push({
+    name,
+    email,
+    event: selectedEvent,
+    status: "Present"
+  });
+
+  localStorage.setItem("attendees", JSON.stringify(attendees));
+
+  regMsg.innerText = "Registration Successful! Check your email.";
+  
+  regName.value = "";
+  regEmail.value = "";
+  regDept.value = "";
+  regYear.value = "";
+  agreeRules.checked = false;
+
+  loadAttendance();
+  updateDashboard();
+  loadCertificateDropdown();
+  updateAnalytics();
+ }
+
+  // regName.value = "";
+  // regEmail.value = "";
+
+  // alert("Registration Successful");
+
+  
+  
+/* ================= ATTENDANCE TABLE ================= */
+function loadAttendance(){
+  const table = document.getElementById("attendanceTable");
+
+  table.innerHTML = `
+    <tr>
+      <th>S.No</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Event</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  `;
+
+  attendees.forEach((s, i)=>{
+    table.innerHTML += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${s.name}</td>
+        <td>${s.email}</td>
+        <td>${s.event}</td>
+        <td>
+          <button onclick="toggleStatus(${i})">${s.status}</button>
+        </td>
+        <td>
+          <button onclick="deleteAttendee(${i})">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+/* ================= TOGGLE PRESENT/ABSENT ================= */
+function toggleStatus(index){
+  attendees[index].status =
+    attendees[index].status === "Present" ? "Absent" : "Present";
+
+  localStorage.setItem("attendees", JSON.stringify(attendees));
+
+  loadAttendance();
+  updateDashboard();
+  updateAnalytics();
+}
+  
+
+/* ================= DELETE ================= */
+function deleteAttendee(index){
+  if(confirm("Delete attendee?")){
+    attendees.splice(index,1);
+    localStorage.setItem("attendees", JSON.stringify(attendees));
+
+    loadAttendance();
+    updateDashboard();
+    loadCertificateDropdown();
+    updateAnalytics();
+  }
+}
+  
+
+/* ================= DASHBOARD ================= */
+function updateDashboard(){
+  document.getElementById("regCount").innerText = attendees.length;
+
+  const present = attendees.filter(a=>a.status==="Present").length;
+  document.getElementById("presentCount").innerText = present;
+
+  const events = JSON.parse(localStorage.getItem("events")) || [];
+  document.getElementById("eventCount").innerText = events.length;
+}
+/* _  analytics  _ */
+  function updateAnalytics(){
+  const total = attendees.length;
+  const present = attendees.filter(a => a.status === "Present").length;
+
+  const rate = total === 0 ? 0 : ((present / total) * 100).toFixed(1);
+
+  document.getElementById("anaTotal").innerText = total;
+  document.getElementById("anaPresent").innerText = present;
+  document.getElementById("anaRate").innerText = rate + "%";
+  // attendees.length();
+  // attendees.status();
+}
+/* ================= CERTIFICATE ================= */
+function loadCertificateDropdown(){
+  const select = document.getElementById("certSelect");
+  select.innerHTML = "";
+
+  attendees.forEach(a=>{
+    select.innerHTML += `<option>${a.name}</option>`;
+  });
+}
+
+function generateCertificate(){
+  const name = certSelect.value;
+  const attendee = attendees.find(a => a.name === name);
+
+  certText.innerHTML =
+    `This is to certify that <b>${name}</b> has successfully participated in
+     <b>${attendee.event}</b>.`;
+}
+/* ================= EXPORT CSV ================= */
+function exportCSV(){
+  let csv = "Name,Email,Event,Status\n";
+
+  attendees.forEach(a=>{
+    csv += `${a.name},${a.email},${a.event},${a.status}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "attendance.csv";
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
+/* ================= LOAD ON START ================= */
+loadAttendance();
+updateDashboard();
+loadCertificateDropdown();
+updateAnalytics();
+loadEventDetails();
+// showPage("landing");
+// /* ================= PAGE NAVIGATION ================= */
+// function showPage(pageId){
+//   document.querySelectorAll("section").forEach(sec=>{
+//     sec.style.display = "none";
+//   });
+
+//   document.getElementById(pageId).style.display = "block";
+// }
+
+/* ================= LOGIN ================= */
+function login(){
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  if(email && password){
+    showPage("dashboard");
+  } else {
+    alert("Enter email and password");
+  }
+}
+
+/* ================= SHOW HOME BY DEFAULT ================= */
+showPage("landing");
+  /* ================= CREATE EVENT ================= */
+function createEvent(){
+  const name = eventName.value.trim();
+  const date = eventDate.value;
+  const venue = eventVenue.value.trim();
+  const desc = eventDesc.value.trim();
+  
+
+
+  if(!name || !date || !venue || !desc){
+    alert("Fill all event details");
+    return;
+  }
+
+  const events = JSON.parse(localStorage.getItem("events"));
+  // console.log("saved events:", events);
+
+  events.push({ name, date, venue, desc });
+
+  localStorage.setItem("events", JSON.stringify(events));
+
+  alert("Event Created Successfully");
+
+  eventName.value = "";
+  eventDate.value = "";
+  eventVenue.value = "";
+  eventDesc.value = "";
+
+  loadEventDetails();
+  showPage("eventDetails");
+}
+
+/* ================= LOAD EVENT DETAILS ================= */
+function loadEventDetails(){
+  const container = document.getElementById("eventCard");
+  container.innerHTML = "";
+
+  // Show default event always
+  const events = JSON.parse(localStorage.getItem("events")) || [];
+  if (events.length === 0) {
+    container.innerHTML = "<p>no events available</p>";
+    return;
+  }
+  events.forEach(event => {
+  container.innerHTML += `
+    <div class="card">
+      <h3>${event.name}</h3>
+      <p><b>Date:</b> ${event.date}</p>
+      <p><b>Venue:</b> ${event.venue}</p>
+      <p>${event.desc}</p>
+      <button onclick="selectEvent('${event.name}')">Register Now</button>
+    </div>
+  `;
+});
+}
+
+  
+
+  let selectedEvent = "";
+
+function selectEvent(eventName){
+  selectedEvent = eventName;
+  document.getElementById("selectedEventName").innerText = eventName;
+  showPage("register");
+}
+function showPage(pageId){
+  document.querySelectorAll("section").forEach(sec=>{sec.style.display = "none";
+  });
+  document.getElementById(pageId).style.display = "block";
+  if(pageId === "eventDetails"){
+    loadEventDetails();
+  }
+  if(pageId === "analytics"){
+    updateAnalytics();
+  }
+  if(pageId === "dashboard"){
+    updateDashboard();
+  }
+}
+  
+</script>
+
+</body>
+</html>
